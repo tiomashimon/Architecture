@@ -12,10 +12,13 @@ SECRET_KEY = env("SECRET_KEY")
 
 DEVELOPMNET_SETTINGS = BASE_DIR / 'core/main/settings/templates/settings.dev.py'
 
+CELERY_CONFIG_MODULE = 'main.settings.celery_settings'
+
+
 include(
     'base.py',
     'swagger.py',
-    'celery.settings.py',
+    'celery_settings.py',
     'logging.py',
 
     DEVELOPMNET_SETTINGS,)

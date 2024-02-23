@@ -37,11 +37,17 @@ services:
       - my_network
 
   celery1:
-    build: core/Docker/local/Dockerfile
-    restart: unless-stopped
-    command: celery -A core.main worker -l info ]
+    environment:
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+    build:
+      context: .
+      dockerfile: core/Docker/local/Dockerfile
+    command: celery -A core.main worker -l info
+    volumes:
+      - ./:/code
     depends_on:
-      - db
+      - backend
       - redis
     networks:
       - my_network
@@ -60,10 +66,13 @@ services:
   #     - my_network
 
   celery-beat:
+    environment:
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
     build:
       context: .
       dockerfile: core/Docker/local/Dockerfile
-    command: celery -A main beat -l info
+    command: celery -A core.main beat -l info
     volumes:
       - ./:/code
     depends_on:
@@ -72,6 +81,7 @@ services:
       - db
     networks:
       - my_network
+
 
   flower:
     image: mher/flower
